@@ -33,8 +33,8 @@
                     @foreach($students as $student)
                     <div class="flex justify-between items-center p-6 rounded-2xl bg-white/5 border border-white/5">
                         <div>
-                            <p class="font-bold text-white">{{ $student->first_name }} {{ $student->last_name }}</p>
-                            <p class="text-[10px] opacity-40 uppercase tracking-widest">{{ $student->student_number }}</p>
+                            <p class="font-bold text-white">{{ $student->name }}</p>
+                            <p class="text-[10px] opacity-40 uppercase tracking-widest">{{ $student->email }}</p>
                         </div>
                         <span class="text-[9px] font-black px-3 py-1 bg-cyan-500/10 text-cyan-400 rounded-full">STUDENT</span>
                     </div>

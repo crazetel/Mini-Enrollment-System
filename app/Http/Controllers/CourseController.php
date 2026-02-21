@@ -36,33 +36,31 @@ class CourseController extends Controller
         return view('courses.show', compact('course', 'students'));
     }
 
-    public function enroll(Request $request)
-{
-    $request->validate([
-        'student_id' => 'required|exists:students,id',
-        'course_id' => 'required|exists:courses,id',
-    ]);
-
-    $student = Student::find($request->student_id);
-    $course = Course::find($request->course_id);
-
-    if ($student->courses()->where('course_id', $course->id)->exists()) {
-        return back()->with('error', 'Student is already enrolled in this course.');
-    }
-
-    if ($course->students()->count() >= $course->capacity) {
-        return back()->with('error', 'Course is full.');
-    }
-
-    $student->courses()->attach($course->id);
-    return back()->with('success', 'Enrolled successfully!');
-}
-
-    public function unenroll($id)
+    public function enroll(Request $request, $courseId)
     {
-        $course = Course::findOrFail($id);
-        Auth::user()->courses()->detach($id);
-        return back()->with('success', 'Withdrawn successfully!');
+        $course = Course::findOrFail($courseId);
+        $user = Auth::user();
+
+        // Check if already enrolled
+        if ($user->courses()->where('course_id', $course->id)->exists()) {
+            return back()->with('error', 'You are already enrolled in this course.');
+        }
+
+        // Check if course is full
+        if ($course->students()->count() >= $course->capacity) {
+            return back()->with('error', 'This course is full. Please try another course.');
+        }
+
+        // Enroll user
+        $user->courses()->attach($course->id);
+        return back()->with('success', 'Successfully enrolled in ' . $course->course_name . '!');
+    }
+
+    public function unenroll($courseId)
+    {
+        $course = Course::findOrFail($courseId);
+        Auth::user()->courses()->detach($courseId);
+        return back()->with('success', 'Successfully withdrawn from ' . $course->course_name . '.');
     }
 
     public function create() 
